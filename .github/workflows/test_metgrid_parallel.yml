@@ -45,7 +45,7 @@ jobs:
 
       - name: copy intermediate FILE
         run: |
-          cd
+          cd /root
           mkdir Data && cd Data
           mkdir tutorialFILE && cd tutorialFILE
           wget https://www2.mmm.ucar.edu/wrf/TUTORIAL_DATA/single_domain/FILE.tar.gz
