@@ -56,10 +56,11 @@ jobs:
           cd $GITHUB_WORKSPACE
           mkdir .venv
           virtualenv .venv
-          source .venv/bin/activate
+          source $GITHUB_WORKSPACE/.venv/bin/activate
           .venv/bin/pip install netCDF4 psutil pytest
 
       - name: test script
         run: |
+          source $GITHUB_WORKSPACE/.venv/bin/activate
           which python
-          python $GITHUB_WORKSPACE/test/test_parallel.py
+          $GITHUB_WORKSPACE/.venv/bin/python $GITHUB_WORKSPACE/test/test_parallel.py
