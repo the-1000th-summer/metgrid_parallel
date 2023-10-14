@@ -5,7 +5,18 @@ from netCDF4 import Dataset
 import numpy as np
 import subprocess
 import shutil
-from metgrid_parallel import NamelistFileGenerator, NamelistInfoGetter
+import sys
+import time
+
+if __name__ == '__main__':
+    # add parent dir to sys.path to let this script access metgrid_parallel.py
+    sys.path.append(str(pathlib.Path(__file__).parent.parent.resolve()))
+
+from metgrid_parallel import NamelistFileGenerator
+
+class bcolors:
+    OKGREEN = '\033[92m'
+    ENDC = '\033[0m'
 
 class NCFileChecker:
     """_"""
@@ -49,11 +60,9 @@ class NCFileChecker:
         var2_data = var2[:]
 
         if var1.name == 'Times':
-            if not np.array_equal(var1_data, var2_data):
-                print(var1.name, 'not equal')
+            assert np.array_equal(var1_data, var2_data), 'varData: {} not equal!'.format(var1.name)
         else:
-            if not np.array_equal(var1_data, var2_data, equal_nan=True):
-                print(var1.name, 'not equal')
+            assert np.array_equal(var1_data, var2_data, equal_nan=True), 'varData: {} not equal!'.format(var1.name)
 
     def checkVarAttrsEqual(self, var1, var2):
         """_"""
@@ -69,9 +78,9 @@ class NCFileChecker:
 
             # check if is numpy array
             if isinstance(attr1Value, (np.ndarray, np.generic)):
-                assert np.array_equal(attr1Value, attr2Value)
+                assert np.array_equal(attr1Value, attr2Value), '{}: varAttr: {} not equal!'.format(var1.name, attrName)
             else:
-                assert attr1Value == attr2Value
+                assert attr1Value == attr2Value, '{}: varAttr: {} not equal!'.format(var1.name, attrName)
 
 
     def checkglobalAttrsEqual(self, file1, file2):
@@ -79,7 +88,7 @@ class NCFileChecker:
         file1_attrsName: list = sorted(file1.ncattrs())
         file2_attrsName: list = sorted(file2.ncattrs())
 
-        assert file1_attrsName == file2_attrsName, 'fileAttrsName is not equal'
+        assert file1_attrsName == file2_attrsName, '{} fileAttrsName is not equal!'.format(file1.filepath())
 
         for i in range(len(file1_attrsName)):
             attrName = file1_attrsName[i]
@@ -87,9 +96,9 @@ class NCFileChecker:
             attr2Value = file2.getncattr(attrName)
 
             if isinstance(attr1Value, (np.ndarray, np.generic)):
-                assert np.array_equal(attr1Value, attr2Value)
+                assert np.array_equal(attr1Value, attr2Value), '{}: fileAttr: {}\'s value not equal!'.format(file1.filepath(), attrName)
             else:
-                assert attr1Value == attr2Value
+                assert attr1Value == attr2Value, '{}: fileAttr: {}\'s value not equal!'.format(file1.filepath(), attrName)
 
 
 def test_metgrid_parallel():
@@ -99,15 +108,19 @@ def test_metgrid_parallel():
     serialRunDir = os.path.join(domainBaseDir, 'run_serial')
     parallelRunDir = os.path.join(domainBaseDir, 'run_parallel')
 
-    # prepareDir(serialRunDir, parallelRunDir)
+    prepareDir(serialRunDir, parallelRunDir)
 
     createNamelistForTest(domainBaseDir, serialRunDir, parallelRunDir)
-    # linkOtherFilesForTest(domainBaseDir, serialRunDir, parallelRunDir)
+    linkOtherFilesForTest(domainBaseDir, serialRunDir, parallelRunDir)
 
     # serial run
-    # subprocess.run('/root/wrf/Build_WRF/WPS_Chem_45/metgrid.exe', cwd=serialRunDir)
+    serial_startTime = time.time()
+    subprocess.run('/root/wrf/Build_WRF/WPS_Chem_45/metgrid.exe', cwd=serialRunDir)
+    print(bcolors.OKGREEN + 'serial run time: {} seconds'.format(time.time() - serial_startTime) + bcolors.ENDC)
 
     # parallel run
+    parallel_startTime = time.time()
+
     metgridParallelPyFileDir = str(pathlib.Path(__file__).parent.parent.resolve())
     metgridParallelPyFilePath = os.path.join(metgridParallelPyFileDir, 'metgrid_parallel.py')
     pythonExe_path = os.path.join(metgridParallelPyFileDir, '.venv/bin/python')
@@ -115,9 +128,11 @@ def test_metgrid_parallel():
     namelist_path = os.path.join(parallelRunDir, 'namelist.wps')
     subprocess.run([pythonExe_path, metgridParallelPyFilePath, '-m', metgridExe_path, '-n', namelist_path], cwd=parallelRunDir)
 
+    print(bcolors.OKGREEN + 'parallel run time: {} seconds'.format(time.time() - parallel_startTime) + bcolors.ENDC)
+
 
     checkFiles(serialRunDir, parallelRunDir)
-    print('all files are equal.')
+    print(bcolors.OKGREEN + 'all files are equal.' + bcolors.ENDC)
 
 
 def prepareDir(serialRunDir: str, parallelRunDir: str):
@@ -171,6 +186,10 @@ def checkFiles(serialRunDir: str, parallelRunDir: str):
 
         t = NCFileChecker(serial_filePath, parallel_filePath)
         t.check()
+
+if __name__ == '__main__':
+    test_metgrid_parallel()
+
 
 # checkFiles('/root/wrf/domain/testMetgridParallel/run_serial', '/root/wrf/domain/testMetgridParallel/run_parallel')
 
