@@ -15,8 +15,11 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
+  # This workflow contains a single job called "runtest"
+  runtest:
+    defaults:
+      run:
+        shell: bash
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     container:
@@ -59,6 +62,5 @@ jobs:
 
       - name: test script
         run: |
-          cd $GITHUB_WORKSPACE/test
           which python
-          python ./test_parallel.py
+          python $GITHUB_WORKSPACE/test/test_parallel.py
