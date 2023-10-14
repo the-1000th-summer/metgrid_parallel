@@ -53,7 +53,8 @@ jobs:
           cd $GITHUB_WORKSPACE
           mkdir .venv
           virtualenv .venv
-          . $GITHUB_WORKSPACE/.venv/bin/activate
+          chmod +x .venv/bin/activate
+          .venv/bin/activate
           .venv/bin/pip install netCDF4 psutil pytest
 
       - name: test script
