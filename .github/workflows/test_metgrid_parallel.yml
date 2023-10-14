@@ -36,4 +36,8 @@ jobs:
       - name: Run a multi-line script
         run: |
           cd /root/wrf
-          mkdir domain
+          mkdir domain && cd domain
+          mkdir testMetgridParallel && cd testMetgridParallel
+          cp $GITHUB_WORKSPACE/data/* ./
+          ls
+  
