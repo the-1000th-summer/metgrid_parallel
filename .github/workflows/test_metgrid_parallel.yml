@@ -60,5 +60,5 @@ jobs:
       - name: test script
         run: |
           cd $GITHUB_WORKSPACE/test
-          $GITHUB_WORKSPACE/.venv/bin/activate
-          ./test_parallel.py
+          which python
+          python ./test_parallel.py
