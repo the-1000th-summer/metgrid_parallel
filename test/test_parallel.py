@@ -177,6 +177,7 @@ def checkFiles(serialRunDir: str, parallelRunDir: str):
     serial_filesName = sorted([f for f in os.listdir(serialRunDir) if f.startswith('met_em.d')])
     parallel_filesName = sorted([f for f in os.listdir(parallelRunDir) if f.startswith('met_em.d')])
 
+    assert serial_filesName and parallel_filesName, 'no met_em files found'
     assert len(serial_filesName) == len(parallel_filesName), 'files number is not equal'
 
     for i in range(len(serial_filesName)):

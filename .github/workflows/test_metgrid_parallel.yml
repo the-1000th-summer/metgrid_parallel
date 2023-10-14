@@ -61,6 +61,7 @@ jobs:
 
       - name: test script
         run: |
+          export LD_LIBRARY_PATH=/root/wrf/Build_WRF/LIBRARIES/netcdf/real_gcc/lib:/root/wrf/Build_WRF/LIBRARIES/grib2/real_gcc/lib:
           source $GITHUB_WORKSPACE/.venv/bin/activate
           which python
           $GITHUB_WORKSPACE/.venv/bin/python $GITHUB_WORKSPACE/test/test_parallel.py
