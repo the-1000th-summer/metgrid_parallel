@@ -50,6 +50,7 @@ jobs:
           mkdir tutorialFILE && cd tutorialFILE
           wget https://www2.mmm.ucar.edu/wrf/TUTORIAL_DATA/single_domain/FILE.tar.gz
           tar -xvzf FILE.tar.gz
+          ls /root/Data/tutorialFILE
 
       - name: install python packages
         run: |
@@ -64,4 +65,5 @@ jobs:
           export LD_LIBRARY_PATH=/root/wrf/Build_WRF/LIBRARIES/netcdf/real_gcc/lib:/root/wrf/Build_WRF/LIBRARIES/grib2/real_gcc/lib:
           source $GITHUB_WORKSPACE/.venv/bin/activate
           which python
+          ls /root/Data/tutorialFILE
           $GITHUB_WORKSPACE/.venv/bin/python $GITHUB_WORKSPACE/test/test_parallel.py
