@@ -39,14 +39,23 @@ jobs:
           mkdir domain && cd domain
           mkdir testMetgridParallel && cd testMetgridParallel
           cp $GITHUB_WORKSPACE/data/* ./
-          ls
+
+      - name: copy intermediate FILE
+        run: |
+          cd
+          mkdir Data && cd Data
+          mkdir tutorialFILE && cd tutorialFILE
+          wget https://www2.mmm.ucar.edu/wrf/TUTORIAL_DATA/single_domain/FILE.tar.gz
+          tar -xvzf FILE.tar.gz
 
       - name: install python packages
         run: |
           cd $GITHUB_WORKSPACE
           mkdir .venv
           virtualenv .venv
-          source .venv/bin/activate
+          ls $GITHUB_WORKSPACE/.venv
+          ls $GITHUB_WORKSPACE/.venv/bin
+          source $GITHUB_WORKSPACE/.venv/bin/activate
           .venv/bin/pip install netCDF4 psutil pytest
 
       - name: test script

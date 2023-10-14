@@ -37,7 +37,7 @@
 /
 
 &metgrid
- fg_name = '/root/python_learn/Data/tutorialFILE/FILE',
+ fg_name = '/root/Data/tutorialFILE/FILE',
  io_form_metgrid = 2,
  opt_output_from_metgrid_path = './',
  opt_metgrid_tbl_path = './',
